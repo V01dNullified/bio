@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- saved from url=(0047)https://v01dnullified.github.io/bio/styled.html -->
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>ephemeral :o</title>
     <style>
@@ -12,6 +11,7 @@
         margin: 0 auto;
         padding: 40px 20px;
         line-height: 1.6;
+        overflow-x: hidden; /* keep the secret animations from breaking the scrollbar */
       }
 
       /* making the header pop just enough without trying too hard */
@@ -20,12 +20,16 @@
         border-bottom: 1px solid #333;
         padding-bottom: 10px;
         text-transform: lowercase; /* keeping it casual asf*/
+        position: relative;
+        z-index: 10; /* keeping ts above the canvas */
       }
 
       /* spacing out the paragraphs so ts aint a giant wall of text */
       p {
         margin-bottom: 24px;
         font-size: 16px;
+        position: relative;
+        z-index: 10;
       }
 
       /* styling the links so they don't look ass */
@@ -34,6 +38,8 @@
         text-decoration: none;
         border-bottom: 1px dashed #bb86fc;
         transition: all 0.2s ease-in-out;
+        position: relative;
+        z-index: 10;
       }
 
       /* making it glow slightly when you hover over that shit */
@@ -52,11 +58,13 @@
         margin-bottom: 30px;
         border-bottom: 1px solid #333;
         padding-bottom: 10px;
+        position: relative;
+        z-index: 10;
       }
 
       /* making the buttons look clean and fit the vibe */
       .tab-btn {
-        background: none;
+        background: #121212;
         color: #e0e0e0;
         border: 1px dashed #333;
         padding: 8px 16px;
@@ -64,6 +72,7 @@
         font-family: inherit;
         font-size: 16px;
         transition: all 0.2s ease-in-out;
+        position: relative; /* needed for the red dot */
       }
 
       /* glow up when active or hovered */
@@ -73,9 +82,25 @@
         background-color: rgba(187, 134, 252, 0.1);
       }
 
+      /* the little red dot for when bro has new posts to read */
+      .tab-btn.has-new::after {
+        content: '';
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        width: 12px;
+        height: 12px;
+        background-color: #ff3b3b;
+        border-radius: 50%;
+        box-shadow: 0 0 8px #ff3b3b;
+        border: 2px solid #121212;
+      }
+
       /* hiding the content unless its the active tab */
       .tab-content {
         display: none;
+        position: relative;
+        z-index: 10;
       }
       .tab-content.active {
         display: block;
@@ -86,7 +111,10 @@
         border: 1px solid #333;
         padding: 20px;
         margin-bottom: 25px;
-        background-color: #181818;
+        background-color: rgba(24, 24, 24, 0.85); /* slightly transparent so background shows */
+        backdrop-filter: blur(4px);
+        position: relative;
+        z-index: 10;
       }
 
       /* styling the date so it pops */
@@ -103,7 +131,7 @@
       .post-content {
         max-height: 150px; /* change this if you want taller boxes */
         overflow: hidden;
-        transition: max-height 0.3s ease;
+        transition: max-height 0.4s ease;
       }
 
       /* expanding it to be massive when button is clicked */
@@ -142,20 +170,114 @@
       .post.expanded .expand-btn {
         transform: rotate(180deg);
       }
+
+      /* --- NOTIFICATION CSS --- */
+      #notif-toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #181818;
+        border: 1px solid #bb86fc;
+        box-shadow: 0 0 15px rgba(187, 134, 252, 0.3);
+        color: #fff;
+        padding: 15px 20px;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        opacity: 0;
+        pointer-events: none; /* cant click ts if it ain't active */
+      }
+
+      #notif-toast.show {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      #notif-toast button {
+        background: none;
+        border: none;
+        color: #bb86fc;
+        font-size: 16px;
+        cursor: pointer;
+        font-family: inherit;
+        font-weight: bold;
+      }
+      #notif-toast button:hover { color: #ff3b3b; }
+
+      /* --- BACKGROUND CANVAS --- */
+      #bg-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 0;
+        pointer-events: none; /* so it dont block clicks */
+      }
+
+
+      /* --- ANIMATION POOLS --- */
+
+      /* 1. Tab Switching Anims */
+      .tab-anim-1 { animation: fadeIn 0.4s ease-out; }
+      .tab-anim-2 { animation: slideIn 0.4s ease-out; }
+      .tab-anim-secret { animation: barrelRoll 1s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+
+      /* 2. Post Expanding Anims (these hit the wrapper to add juice to the height transition) */
+      .post-anim-1 { animation: flashBorder 0.5s ease; }
+      .post-anim-2 { animation: pulseSize 0.4s ease; }
+      .post-anim-secret { animation: earthquake 0.5s linear; }
+
+      /* 3. Notif Pop Anims */
+      .notif-pop-1 { animation: slideDown 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+      .notif-pop-2 { animation: swingIn 0.6s ease-out forwards; }
+      .notif-pop-secret { animation: flashbang 0.8s ease-out forwards; }
+
+      /* 4. Notif Close Anims */
+      .notif-close-1 { animation: fadeOut 0.3s ease-in forwards; }
+      .notif-close-2 { animation: slideUp 0.4s ease-in forwards; }
+      .notif-close-secret { animation: yeet 0.8s ease-in forwards; }
+
+      /* KEYFRAMES */
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+      @keyframes barrelRoll { 0% { transform: rotate(0deg) scale(0.1); opacity: 0; background: red; } 50% { transform: rotate(180deg) scale(1.2); background: blue; } 100% { transform: rotate(360deg) scale(1); opacity: 1; background: transparent; } }
+
+      @keyframes flashBorder { 0% { border-color: #333; } 50% { border-color: #bb86fc; box-shadow: 0 0 20px #bb86fc; } 100% { border-color: #333; } }
+      @keyframes pulseSize { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+      @keyframes earthquake { 0% { transform: translate(0, 0) rotate(0deg); } 20% { transform: translate(-5px, 5px) rotate(-2deg); } 40% { transform: translate(5px, -5px) rotate(2deg); background-color: #ff3b3b; } 60% { transform: translate(-5px, -5px) rotate(-2deg); } 80% { transform: translate(5px, 5px) rotate(2deg); } 100% { transform: translate(0, 0) rotate(0deg); background-color: #181818; } }
+
+      @keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+      @keyframes swingIn { 0% { transform: rotateX(-90deg); opacity: 0; transform-origin: top; } 100% { transform: rotateX(0deg); opacity: 1; transform-origin: top; } }
+      @keyframes flashbang { 0% { transform: scale(3); background-color: #fff; color: #000; opacity: 1; } 50% { transform: scale(0.5) rotate(15deg); background-color: #0f0; } 100% { transform: scale(1) rotate(0deg); background-color: #181818; } }
+
+      @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+      @keyframes slideUp { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-50px); opacity: 0; } }
+      @keyframes yeet { 0% { transform: scale(1); } 20% { transform: scale(1.2) rotate(-10deg); } 100% { transform: translate(100vw, -100vh) rotate(720deg) scale(0); opacity: 0; } }
     </style>
   </head>
   <body>
+    <!-- keeping the background alive back here -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- the toast that pops up when ts is fresh -->
+    <div id="notif-toast">
+      <span id="notif-msg">0 new posts!</span>
+      <button onclick="closeNotif()">[x]</button>
+    </div>
+
     <h1>wsp son</h1>
 
     <!-- TABS MENU -->
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('bio-tab', this)">bio</button>
-      <button class="tab-btn" onclick="switchTab('posts-tab', this)">posts</button>
+      <button id="posts-btn" class="tab-btn" onclick="switchTab('posts-tab', this)">posts</button>
     </div>
     
     <!-- BIO SECTION (original content) -->
     <div id="bio-tab" class="tab-content active">
-        <p>made this at 2:22pm, so im not tryna make it polished deadass.</p>
+        <p>made this at 2:30am, but was motivated so made it supa (hoe cake reference?) polished</p>
         
         <p>im ben, i make projects spontaniously and fleetingly. expect the periods of me actually being productive in a specific niche to be a literal reflection of what i go be online, ephemeral asf.</p>
         
@@ -184,76 +306,261 @@
 
     <!-- POSTS SECTION (new blog feature) -->
     <div id="posts-tab" class="tab-content">
-      
-      
-
+            <!-- POST 3 (note to self incase im an idiot, copy this whole block to make a new post) -->
+      <div class="post">
+        <span class="post-date">july 23, 2026</span>
+        <div class="post-content">
+          <p>updated to add notifications, silly animations, and cool background + other shit.</p>
+        </div>
+        <button class="expand-btn" onclick="togglePost(this)">&#x25BC;</button>
+      </div>
+        
       <!-- POST 2 (note to self incase im an idiot, copy this whole block to make a new post) -->
       <div class="post">
         <span class="post-date">july 23, 2026</span>
         <div class="post-content">
           <p>aight so today i saw an insta reel of some guy talking about how atheists are dumb because they cant prove their belief in objective morality. he uses an analogy of 2 people being on an island, each having opposing views on whether murder is good or bad. then he says there is no way to prove whos right if there isn't a religious text or revelation or god that gives them the objective morality.</p>
-
-            <p>however, this thats just fallacy of desire, just because there "isn't a way to prove whos right" doesn't mean that god is the correct answer. a circle on a graph not being a function doesn't mean that the actual function is playing hide and seek in the 5th dimension, even if that WOULD explain it. </p>
-
-            <p>not only that, no actual atheist believes in objective morality in the first place. theres no law in physics that tells you what is and isn't wrong because morality is a human construct of empathy. the closest to objective morality literally explains how that first analogy of the two people on an island is stupid in the first place.</p>
-
-            <p>humans began in close knit tribes to survive. if some random dude named joe in a tribe of 10 decided that he was going to murder someone once a day, how long do you think that tribe would survive? not only that, but joe himself would either get exiled or executed, both meaning his sociopathic genes end with him. </p>
-
-            <p>humans evolved to be naturally repulsive of death because death brings more death, if 1/10th of your tribe dies, youre gonna work 50% harder to stay alive. so we evolved to get empathy, to relate, to communicate, and all those things lead to us having a natural, biological sense of morality that is as close to objective morality as it can get.</p>
-
-            <p>in the situation of those 2 people on an island, do you really think the guy against murder couldn't draw the easiest conclusion from a path of thinking that follows "if your closest individual got murdered, how would you feel about it. would you want to kill the other person too, or let it be. do you think youre better or worse off in life now that you lost your closest person?" </p>
-
-            <p>what justification could someone make for murder is good? i can think of 2, one being law and the other religion itself. </p>
-
-            <p>the same guy in that reel said "atheists will say that the general consensus of a society makes the objective morality" (although i have never heard a soul say that), then he draws that society 200 years ago agreed together that slavery was morally good. literally in what situation does this not backfire on your own argument? 200 years ago, virtually everyone was religious, so why did the god given morality not step in there? </p>
-
-            <p>of course of course, its the apologist mega-defense statement ill hear, "god works mysterious ways." whats the point of arguing logic with someone who exclusively uses dogma and faith? </p>
-
-            <p>it seems every point the guy made in that reel was him sitting on the toilet and thinking "how can i prove my opinions true?" anyone with a lick of scientific understanding would know in an instant that youre to try to DISPROVE your conclusions, not prove it. anyone can prove a factually incorrect statement by just ignoring the evidence against it and making up shit to make it easier to argue for.</p>
-
-            <p>oh and to wrap it up, the whole thing was a strawman and false dilemma: no atheist believes in objective morality, and just because there isn't an atheist explanation to objective morality doesn't immediately suggest that there is a god given one.</p>
+          <p>however, this thats just fallacy of desire, just because there "isn't a way to prove whos right" doesn't mean that god is the correct answer. a circle on a graph not being a function doesn't mean that the actual function is playing hide and seek in the 5th dimension, even if that WOULD explain it. </p>
+          <p>not only that, no actual atheist believes in objective morality in the first place. theres no law in physics that tells you what is and isn't wrong because morality is a human construct of empathy. the closest to objective morality literally explains how that first analogy of the two people on an island is stupid in the first place.</p>
+          <p>humans began in close knit tribes to survive. if some random dude named joe in a tribe of 10 decided that he was going to murder someone once a day, how long do you think that tribe would survive? not only that, but joe himself would either get exiled or executed, both meaning his sociopathic genes end with him. </p>
+          <p>humans evolved to be naturally repulsive of death because death brings more death, if 1/10th of your tribe dies, youre gonna work 50% harder to stay alive. so we evolved to get empathy, to relate, to communicate, and all those things lead to us having a natural, biological sense of morality that is as close to objective morality as it can get.</p>
+          <p>in the situation of those 2 people on an island, do you really think the guy against murder couldn't draw the easiest conclusion from a path of thinking that follows "if your closest individual got murdered, how would you feel about it. would you want to kill the other person too, or let it be. do you think youre better or worse off in life now that you lost your closest person?" </p>
+          <p>what justification could someone make for murder is good? i can think of 2, one being law and the other religion itself. </p>
+          <p>the same guy in that reel said "atheists will say that the general consensus of a society makes the objective morality" (although i have never heard a soul say that), then he draws that society 200 years ago agreed together that slavery was morally good. literally in what situation does this not backfire on your own argument? 200 years ago, virtually everyone was religious, so why did the god given morality not step in there? </p>
+          <p>of course of course, its the apologist mega-defense statement ill hear, "god works mysterious ways." whats the point of arguing logic with someone who exclusively uses dogma and faith? </p>
+          <p>it seems every point the guy made in that reel was him sitting on the toilet and thinking "how can i prove my opinions true?" anyone with a lick of scientific understanding would know in an instant that youre to try to DISPROVE your conclusions, not prove it. anyone can prove a factually incorrect statement by just ignoring the evidence against it and making up shit to make it easier to argue for.</p>
+          <p>oh and to wrap it up, the whole thing was a strawman and false dilemma: no atheist believes in objective morality, and just because there isn't an atheist explanation to objective morality doesn't immediately suggest that there is a god given one.</p>
         </div>
-        <!-- you still keep the button just in case, or you can delete it for short posts -->
         <button class="expand-btn" onclick="togglePost(this)">&#x25BC;</button>
-          
       </div>
-        <!-- POST 1 -->
+
+      <!-- POST 1 -->
       <div class="post">
         <span class="post-date">july 22, 2026</span>
         <div class="post-content">
           <p>deadass just testing this blog out. ts has a max vertical limit so if i keep typing a bunch of random filler shit, it's gonna get cut off and you'll have to press the arrow to read the rest.</p>
           <p>adding some extra text here to trigger the overflow.</p>
           <p>yep, still yapping. testing out images too.</p>
-          <!-- image example, just replace the src with your own link or local file -->
           <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExemE1aHYzd2NncHEwdWZ0aXYyNGZ3YnNleTEyamN1cnI4aGZ2N3RkcCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/TAfv4qEQW4HhVIMnqc/giphy.gif" alt="gif">
         </div>
-        <!-- the arrow to expand the post -->
         <button class="expand-btn" onclick="togglePost(this)">&#x25BC;</button>
       </div>
     </div>
 
     <!-- the js that makes everything work -->
     <script>
-      // swapping between bio and posts seamlessly
+      // --- RNG ANIMATION FUNCTION ---
+      // ts takes the element and the 3 class names, rolls the dice, and forces the animation to replay
+      function playRandomAnim(el, class1, class2, secretClass) {
+        // clear old shit so we can restart the animation
+        el.classList.remove(class1, class2, secretClass);
+        void el.offsetWidth; // deadass forcing the browser to reflow so the animation restarts
+
+        let rng = Math.random();
+        if (rng < 0.01) { // 1% chance for the secret loud ass animation
+          el.classList.add(secretClass);
+        } else if (rng < 0.505) { // roughly 50% for normal 1
+          el.classList.add(class1);
+        } else { // roughly 50% for normal 2
+          el.classList.add(class2);
+        }
+      }
+
+      // --- TABS ---
       function switchTab(tabId, clickedBtn) {
-        // hide all content
         document.querySelectorAll('.tab-content').forEach(tab => {
           tab.classList.remove('active');
         });
-        // reset all buttons
         document.querySelectorAll('.tab-btn').forEach(btn => {
           btn.classList.remove('active');
         });
         
-        // show the one you clicked
-        document.getElementById(tabId).classList.add('active');
+        let targetTab = document.getElementById(tabId);
+        targetTab.classList.add('active');
         clickedBtn.classList.add('active');
+
+        // if bro clicked posts, remove the red dot badge
+        if(tabId === 'posts-tab') {
+          clickedBtn.classList.remove('has-new');
+        }
+
+        // trigger the tab animation pool
+        playRandomAnim(targetTab, 'tab-anim-1', 'tab-anim-2', 'tab-anim-secret');
       }
 
-      // expanding the post box when you hit the arrow
+      // --- POSTS ---
       function togglePost(btn) {
         const post = btn.closest('.post');
         post.classList.toggle('expanded');
+        
+        // trigger the post animation pool
+        playRandomAnim(post, 'post-anim-1', 'post-anim-2', 'post-anim-secret');
+      }
+
+      // --- COOKIES & NOTIF SYSTEM ---
+      // simple functions to save and get cookies without relying on a fat library
+      function setCookie(cname, cvalue, exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        let expires = "expires="+d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      }
+
+      function getCookie(cname) {
+        let name = cname + "=";
+        let ca = document.cookie.split(';');
+        for(let i = 0; i < ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) == ' ') { c = c.substring(1); }
+          if (c.indexOf(name) == 0) { return c.substring(name.length, c.length); }
+        }
+        return "";
+      }
+
+      // closing the notification toast
+      function closeNotif() {
+        const toast = document.getElementById('notif-toast');
+        // trigger the closing animation pool
+        playRandomAnim(toast, 'notif-close-1', 'notif-close-2', 'notif-close-secret');
+        // clean up after animation finishes so it doesnt block clicks
+        setTimeout(() => { toast.classList.remove('show'); }, 800);
+      }
+
+      // checking for new posts when the page loads up
+      window.onload = () => {
+        // count how many posts we got in the html
+        let currentPosts = document.querySelectorAll('.post').length;
+        let savedPosts = getCookie('ephemeralPostCount');
+
+        if (savedPosts !== "") {
+          savedPosts = parseInt(savedPosts);
+          if (currentPosts > savedPosts) {
+            let diff = currentPosts - savedPosts;
+            
+            // show the red dot on the post tab
+            document.getElementById('posts-btn').classList.add('has-new');
+
+            // set up the toast
+            document.getElementById('notif-msg').innerText = `${diff} new post${diff > 1 ? 's' : ''}!`;
+            const toast = document.getElementById('notif-toast');
+            toast.classList.add('show');
+            
+            // trigger the pop up animation pool
+            playRandomAnim(toast, 'notif-pop-1', 'notif-pop-2', 'notif-pop-secret');
+          }
+        }
+        
+        // save the new count to the cookie so it dont bother them again unless we add more
+        setCookie('ephemeralPostCount', currentPosts, 365);
+        initCanvas(); // start the background swag
+      };
+
+      // --- INTERACTIVE BACKGROUND (CANVAS) ---
+      // setting up a subtle particle system that reacts to the mouse, fits the vibes
+      function initCanvas() {
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        let particles = [];
+        let mouse = { x: null, y: null, radius: 100 };
+
+        window.addEventListener('mousemove', (e) => {
+          mouse.x = e.x;
+          mouse.y = e.y;
+        });
+
+        window.addEventListener('resize', () => {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+        });
+
+        class Particle {
+          constructor() {
+            this.x = Math.random() * width;
+            this.y = Math.random() * height;
+            this.size = Math.random() * 2 + 1;
+            this.baseX = this.x;
+            this.baseY = this.y;
+            this.density = (Math.random() * 20) + 1;
+          }
+          draw() {
+            ctx.fillStyle = 'rgba(187, 134, 252, 0.4)'; // that chill purple accent
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.fill();
+          }
+          update() {
+            // checking distance between particle and mouse
+            let dx = mouse.x - this.x;
+            let dy = mouse.y - this.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            let forceDirectionX = dx / distance;
+            let forceDirectionY = dy / distance;
+            let maxDistance = mouse.radius;
+            let force = (maxDistance - distance) / maxDistance;
+            let directionX = forceDirectionX * force * this.density;
+            let directionY = forceDirectionY * force * this.density;
+
+            if (distance < mouse.radius) {
+              // repel particles away from mouse deadass
+              this.x -= directionX;
+              this.y -= directionY;
+            } else {
+              // slowly return back to base position
+              if (this.x !== this.baseX) {
+                let dx = this.x - this.baseX;
+                this.x -= dx / 20;
+              }
+              if (this.y !== this.baseY) {
+                let dy = this.y - this.baseY;
+                this.y -= dy / 20;
+              }
+            }
+            this.draw();
+          }
+        }
+
+        function initParticles() {
+          particles = [];
+          // creating enough particles so it looks cool but doesn't lag the shit out of the browser
+          for (let i = 0; i < 150; i++) {
+            particles.push(new Particle());
+          }
+        }
+
+        function animate() {
+          ctx.clearRect(0, 0, width, height);
+          for (let i = 0; i < particles.length; i++) {
+            particles[i].update();
+          }
+          connectParticles();
+          requestAnimationFrame(animate);
+        }
+
+        // drawing lines between close particles for that hacker network look
+        function connectParticles() {
+          let opacityValue = 1;
+          for (let a = 0; a < particles.length; a++) {
+            for (let b = a; b < particles.length; b++) {
+              let distance = ((particles[a].x - particles[b].x) * (particles[a].x - particles[b].x))
+                           + ((particles[a].y - particles[b].y) * (particles[a].y - particles[b].y));
+              if (distance < (canvas.width/7) * (canvas.height/7)) {
+                opacityValue = 1 - (distance / 10000);
+                ctx.strokeStyle = 'rgba(187, 134, 252, ' + opacityValue + ')';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(particles[a].x, particles[a].y);
+                ctx.lineTo(particles[b].x, particles[b].y);
+                ctx.stroke();
+              }
+            }
+          }
+        }
+
+        initParticles();
+        animate();
       }
     </script>
 </body></html>

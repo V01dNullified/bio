@@ -49,9 +49,7 @@
         background-color: rgba(187, 134, 252, 0.1);
       }
 
-      /* --- NEW CSS FOR THE BLOG SHIT --- */
-
-      /* styling the tabs so you can switch between bio and posts */
+      /* --- NEW CSS FOR THE TABS AND BLOG SHIT --- */
       .tabs {
         display: flex;
         gap: 15px;
@@ -60,6 +58,7 @@
         padding-bottom: 10px;
         position: relative;
         z-index: 10;
+        flex-wrap: wrap; /* incase screens small */
       }
 
       /* making the buttons look clean and fit the vibe */
@@ -72,7 +71,7 @@
         font-family: inherit;
         font-size: 16px;
         transition: all 0.2s ease-in-out;
-        position: relative; /* needed for the red dot */
+        position: relative; 
       }
 
       /* glow up when active or hovered */
@@ -82,7 +81,7 @@
         background-color: rgba(187, 134, 252, 0.1);
       }
 
-      /* the little red dot for when bro has new posts to read */
+      /* the little red dot for when bro has new posts or notifs */
       .tab-btn.has-new::after {
         content: '';
         position: absolute;
@@ -111,7 +110,7 @@
         border: 1px solid #333;
         padding: 20px;
         margin-bottom: 25px;
-        background-color: rgba(24, 24, 24, 0.85); /* slightly transparent so background shows */
+        background-color: rgba(24, 24, 24, 0.85);
         backdrop-filter: blur(4px);
         position: relative;
         z-index: 10;
@@ -129,7 +128,7 @@
 
       /* clamping the height so ts doesnt take up the whole screen */
       .post-content {
-        max-height: 150px; /* change this if you want taller boxes */
+        max-height: 150px; 
         overflow: hidden;
         transition: max-height 0.4s ease;
       }
@@ -139,7 +138,6 @@
         max-height: 5000px;
       }
 
-      /* making sure images fit nicely inside the post box */
       .post img {
         max-width: 100%;
         height: auto;
@@ -166,9 +164,74 @@
         background-color: rgba(187, 134, 252, 0.1);
       }
 
-      /* flipping the arrow upside down when expanded */
       .post.expanded .expand-btn {
         transform: rotate(180deg);
+      }
+
+      /* --- GLOBAL CLICK ANIMATION --- */
+      .click-fx {
+        position: fixed;
+        border-radius: 50%;
+        border: 2px solid #bb86fc;
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+        animation: clickRipple 0.5s ease-out forwards;
+        z-index: 9999; /* over absolutely everything */
+      }
+      @keyframes clickRipple {
+        0% { width: 0; height: 0; opacity: 1; border-width: 3px; }
+        100% { width: 60px; height: 60px; opacity: 0; border-width: 1px; }
+      }
+
+      /* --- NOTIFICATION TAB CSS --- */
+      .notif-item {
+        background: rgba(24, 24, 24, 0.85);
+        border-left: 3px solid #bb86fc;
+        padding: 12px;
+        margin-bottom: 10px;
+        font-size: 14px;
+        animation: fadeIn 0.3s ease;
+      }
+      .notif-time {
+        color: #bb86fc;
+        font-size: 12px;
+        margin-right: 10px;
+        font-weight: bold;
+      }
+
+      /* --- MINIGAME CSS --- */
+      .minigame-ui {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        background: rgba(24, 24, 24, 0.85);
+        padding: 10px 20px;
+        border: 1px solid #333;
+      }
+      #game-canvas {
+        background: #000;
+        border: 1px solid #bb86fc;
+        cursor: crosshair; /* immersive shit */
+        display: block;
+        margin: 0 auto;
+        max-width: 100%;
+        box-shadow: 0 0 15px rgba(187, 134, 252, 0.1);
+      }
+      .start-btn {
+        background: #121212;
+        color: #bb86fc;
+        border: 1px dashed #bb86fc;
+        padding: 8px 16px;
+        font-family: inherit;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .start-btn:hover {
+        background: rgba(187, 134, 252, 0.2);
+        color: #fff;
       }
 
       /* --- NOTIFICATION CSS --- */
@@ -187,6 +250,7 @@
         gap: 15px;
         opacity: 0;
         pointer-events: none; /* cant click ts if it ain't active */
+        max-width: 300px;
       }
 
       #notif-toast.show {
@@ -218,13 +282,12 @@
 
 
       /* --- ANIMATION POOLS --- */
-
       /* 1. Tab Switching Anims */
       .tab-anim-1 { animation: fadeIn 0.4s ease-out; }
       .tab-anim-2 { animation: slideIn 0.4s ease-out; }
       .tab-anim-secret { animation: barrelRoll 1s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
 
-      /* 2. Post Expanding Anims (these hit the wrapper to add juice to the height transition) */
+      /* 2. Post Expanding Anims */
       .post-anim-1 { animation: flashBorder 0.5s ease; }
       .post-anim-2 { animation: pulseSize 0.4s ease; }
       .post-anim-secret { animation: earthquake 0.5s linear; }
@@ -273,40 +336,29 @@
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('bio-tab', this)">bio</button>
       <button id="posts-btn" class="tab-btn" onclick="switchTab('posts-tab', this)">posts</button>
+      <button id="notifs-btn" class="tab-btn" onclick="switchTab('notifs-tab', this)">notifs</button>
+      <button class="tab-btn" onclick="switchTab('minigame-tab', this)">minigame</button>
     </div>
     
     <!-- BIO SECTION (original content) -->
     <div id="bio-tab" class="tab-content active">
         <p>made this at 2:30am, but was motivated so made it supa (hoe cake reference?) polished</p>
-        
         <p>im ben, i make projects spontaniously and fleetingly. expect the periods of me actually being productive in a specific niche to be a literal reflection of what i go be online, ephemeral asf.</p>
-        
         <p>my hobbies include soccer, gym, art, programming (usually macros and frontend web development and python and shit), and anime.</p>
-        
         <p>curious about my anime preferences? visit my anilist account which i regularly update on the daily: <a href="https://anilist.com/users/ephemerality" target="_blank">here</a></p>
-        
         <p>philosophy: im a nihilistic epicureanist. being honest, i deadass made that shit up myself. but it means i think the universe hasnt a meaning and so you should make your own purpose and grand goal to it, in my case it was epicureanism. epicureanism values longterm happiness, pleasure, satisfaction, and peace of mind. like hedonism but long term instead of taking the first thing you see that makes you happy.</p>
-        
         <p>political stance: i am heavily in favor of the nordic system. im antizionist and think corruption is rampant in both the usa and brazil (im brazilian).</p>
-        
         <p>prolly good to note that i live in the usa. i speak spanish portuguese and english fluently. i plan on being an offshore rig sparky and retiring when im 38. ik pretty optimistic to assume i wont get eradicated from ww3 by then lmao.</p>
-        
         <p>as its probably obvious by now, im obssessed with 4 things: creative work, joyousness, anime, and time. time is a very valuable thing to me, because its really the driving force behind my motivations. i live on the assumption that procrastination on a goal is gambling it on the assumption ill be alive tommorow. does that sound grim? youre trapped by time and youll live once. life is inherently meaningless by default. i gave myself the goal to be as happy as possible for as long as possible. and death is inescapable, so whats the point of worrying bout that shit? let it be and focus on what you can change deadass.</p>
-        
         <p>kanye and MF DOOM (all caps) are my favorite music artists. romcoms are my favorite genre of anime. JJBA is my favorite shounen/seinen anime/manga, 100gfwrrrrrly is my favorite anime in general (followed by dangers in my heart).</p>
-        
         <p>im 6' or so, really skinny at 145lbs though. have been bulkin for 7 months, gained a ton of muscle (compared to before) and lost fat at the same time, so now i got hella abs too.</p>
-        
         <p>im exceptionally confident in myself. im not arrogant, just selfishly selfless while being hella confident. im based and opinionated, i will shit on hyped things if theyre ass. i dont fw bandwagon shit.</p>
-        
         <p>kinda broke (hmo $devdivinity). i support barcalona and internacional sc (series A in brazil (barely, fuckin scaring me these days)).</p>
-        
         <p>thats all i can think of. "my 15 seconds up but i got more to say / thats enough, mr. ephemeral, please, no more today" headass</p>
     </div>
 
-    <!-- POSTS SECTION (new blog feature) -->
+    <!-- POSTS SECTION -->
     <div id="posts-tab" class="tab-content">
-            <!-- POST 3 (note to self incase im an idiot, copy this whole block to make a new post) -->
       <div class="post">
         <span class="post-date">july 23, 2026</span>
         <div class="post-content">
@@ -315,7 +367,6 @@
         <button class="expand-btn" onclick="togglePost(this)">&#x25BC;</button>
       </div>
         
-      <!-- POST 2 (note to self incase im an idiot, copy this whole block to make a new post) -->
       <div class="post">
         <span class="post-date">july 23, 2026</span>
         <div class="post-content">
@@ -334,7 +385,6 @@
         <button class="expand-btn" onclick="togglePost(this)">&#x25BC;</button>
       </div>
 
-      <!-- POST 1 -->
       <div class="post">
         <span class="post-date">july 22, 2026</span>
         <div class="post-content">
@@ -347,21 +397,111 @@
       </div>
     </div>
 
+    <!-- NOTIFICATIONS TAB -->
+    <div id="notifs-tab" class="tab-content">
+      <p>log of all the dumb shit that pops up incase you missed it:</p>
+      <div id="notif-list">
+        <!-- populated by js -->
+      </div>
+    </div>
+
+    <!-- MINIGAME TAB -->
+    <div id="minigame-tab" class="tab-content">
+      <p>particles track your mouse. click the green circles before time runs out. if you miss, they explode into more particles. dont touch the red shit.</p>
+      <div class="minigame-ui">
+        <span>Score: <b id="game-score">0</b></span>
+        <span>Highscore: <b id="game-high">0</b></span>
+        <button class="start-btn" onclick="startGame()">Start Game</button>
+      </div>
+      <canvas id="game-canvas" width="650" height="350"></canvas>
+    </div>
+
     <!-- the js that makes everything work -->
     <script>
+      // --- GLOBAL CLICK ANIMATION ---
+      window.addEventListener('click', (e) => {
+        // spawning a ripple where bro clicks
+        let fx = document.createElement('div');
+        fx.className = 'click-fx';
+        fx.style.left = e.clientX + 'px';
+        fx.style.top = e.clientY + 'px';
+        document.body.appendChild(fx);
+        // cleaning it up after animation finishes
+        setTimeout(() => fx.remove(), 500);
+      });
+
+      // --- COOKIES & NOTIF SYSTEM ---
+      // encoding to make sure stringified JSON doesn't blow up the cookie
+      function setCookie(cname, cvalue, exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        let expires = "expires="+d.toUTCString();
+        document.cookie = cname + "=" + encodeURIComponent(cvalue) + ";" + expires + ";path=/";
+      }
+
+      function getCookie(cname) {
+        let name = cname + "=";
+        let ca = document.cookie.split(';');
+        for(let i = 0; i < ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) == ' ') { c = c.substring(1); }
+          if (c.indexOf(name) == 0) { return decodeURIComponent(c.substring(name.length, c.length)); }
+        }
+        return "";
+      }
+
+      let notifTimeout;
+      function fireNotif(msg) {
+        document.getElementById('notif-msg').innerText = msg;
+        const toast = document.getElementById('notif-toast');
+        toast.classList.add('show');
+        playRandomAnim(toast, 'notif-pop-1', 'notif-pop-2', 'notif-pop-secret', true);
+        
+        // save to history tab
+        let history = getCookie('ephemeralNotifHistory');
+        let arr = history ? JSON.parse(history) : [];
+        arr.unshift({ time: new Date().toLocaleTimeString(), msg: msg });
+        if(arr.length > 20) arr.pop(); // keep last 20 so cookie dont get too fat
+        setCookie('ephemeralNotifHistory', JSON.stringify(arr), 365);
+        renderNotifTab();
+        
+        // put a red dot on notifs tab if they aren't on it
+        if(!document.getElementById('notifs-tab').classList.contains('active')) {
+          document.getElementById('notifs-btn').classList.add('has-new');
+        }
+
+        clearTimeout(notifTimeout);
+        notifTimeout = setTimeout(closeNotif, 4000); // auto close ts
+      }
+
+      function renderNotifTab() {
+        let history = getCookie('ephemeralNotifHistory');
+        let arr = history ? JSON.parse(history) : [];
+        let html = arr.map(n => `<div class="notif-item"><span class="notif-time">[${n.time}]</span> ${n.msg}</div>`).join('');
+        document.getElementById('notif-list').innerHTML = html || '<p>no notifications yet bro, go click some shit.</p>';
+      }
+
+      function closeNotif() {
+        const toast = document.getElementById('notif-toast');
+        playRandomAnim(toast, 'notif-close-1', 'notif-close-2', 'notif-close-secret', true);
+        setTimeout(() => { toast.classList.remove('show'); }, 800);
+      }
+
       // --- RNG ANIMATION FUNCTION ---
-      // ts takes the element and the 3 class names, rolls the dice, and forces the animation to replay
-      function playRandomAnim(el, class1, class2, secretClass) {
-        // clear old shit so we can restart the animation
+      function playRandomAnim(el, class1, class2, secretClass, ignoreNotif = false) {
         el.classList.remove(class1, class2, secretClass);
-        void el.offsetWidth; // deadass forcing the browser to reflow so the animation restarts
+        void el.offsetWidth; // forcing the browser to reflow so the animation restarts
 
         let rng = Math.random();
-        if (rng < 0.01) { // 1% chance for the secret loud ass animation
+        if (rng < 0.05) { // bumped to 5% to match bg secret chances
           el.classList.add(secretClass);
-        } else if (rng < 0.505) { // roughly 50% for normal 1
+          // if they find a secret anim, let em know (unless its the toast itself doing it, then infinite loop lol)
+          if(!ignoreNotif) {
+             setTimeout(() => fireNotif("yo you just found a secret 5% UI animation! lucky mf fr"), 100);
+          }
+        } else if (rng < 0.52) {
           el.classList.add(class1);
-        } else { // roughly 50% for normal 2
+        } else {
           el.classList.add(class2);
         }
       }
@@ -379,10 +519,8 @@
         targetTab.classList.add('active');
         clickedBtn.classList.add('active');
 
-        // if bro clicked posts, remove the red dot badge
-        if(tabId === 'posts-tab') {
-          clickedBtn.classList.remove('has-new');
-        }
+        // remove the red dot badge if clicked
+        clickedBtn.classList.remove('has-new');
 
         // trigger the tab animation pool
         playRandomAnim(targetTab, 'tab-anim-1', 'tab-anim-2', 'tab-anim-secret');
@@ -392,84 +530,57 @@
       function togglePost(btn) {
         const post = btn.closest('.post');
         post.classList.toggle('expanded');
-        
         // trigger the post animation pool
         playRandomAnim(post, 'post-anim-1', 'post-anim-2', 'post-anim-secret');
       }
 
-      // --- COOKIES & NOTIF SYSTEM ---
-      // simple functions to save and get cookies without relying on a fat library
-      function setCookie(cname, cvalue, exdays) {
-        const d = new Date();
-        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-        let expires = "expires="+d.toUTCString();
-        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-      }
-
-      function getCookie(cname) {
-        let name = cname + "=";
-        let ca = document.cookie.split(';');
-        for(let i = 0; i < ca.length; i++) {
-          let c = ca[i];
-          while (c.charAt(0) == ' ') { c = c.substring(1); }
-          if (c.indexOf(name) == 0) { return c.substring(name.length, c.length); }
-        }
-        return "";
-      }
-
-      // closing the notification toast
-      function closeNotif() {
-        const toast = document.getElementById('notif-toast');
-        // trigger the closing animation pool
-        playRandomAnim(toast, 'notif-close-1', 'notif-close-2', 'notif-close-secret');
-        // clean up after animation finishes so it doesnt block clicks
-        setTimeout(() => { toast.classList.remove('show'); }, 800);
-      }
-
-      // checking for new posts when the page loads up
       window.onload = () => {
-        // count how many posts we got in the html
         let currentPosts = document.querySelectorAll('.post').length;
         let savedPosts = getCookie('ephemeralPostCount');
+        renderNotifTab();
 
         if (savedPosts !== "") {
           savedPosts = parseInt(savedPosts);
           if (currentPosts > savedPosts) {
             let diff = currentPosts - savedPosts;
-            
-            // show the red dot on the post tab
             document.getElementById('posts-btn').classList.add('has-new');
-
-            // set up the toast
-            document.getElementById('notif-msg').innerText = `${diff} new post${diff > 1 ? 's' : ''}!`;
-            const toast = document.getElementById('notif-toast');
-            toast.classList.add('show');
-            
-            // trigger the pop up animation pool
-            playRandomAnim(toast, 'notif-pop-1', 'notif-pop-2', 'notif-pop-secret');
+            fireNotif(`yoo, ${diff} new post${diff > 1 ? 's' : ''} dropped!`);
           }
         }
-        
-        // save the new count to the cookie so it dont bother them again unless we add more
         setCookie('ephemeralPostCount', currentPosts, 365);
-        initCanvas(); // start the background swag
+        
+        // initialize the background canvas swag
+        initCanvas(); 
       };
 
       // --- INTERACTIVE BACKGROUND (CANVAS) ---
-      // setting up a subtle particle system that reacts to the mouse, fits the vibes
+      // 4 modes rolled on page load. 3 normal, 1 secret (5% chance)
       function initCanvas() {
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let width = canvas.width = window.innerWidth;
         let height = canvas.height = window.innerHeight;
         let particles = [];
-        let mouse = { x: null, y: null, radius: 100 };
+        let mouse = { x: -1000, y: -1000, radius: 120 };
+
+        // Rolling for background mode
+        let bgRoll = Math.random();
+        let bgMode = 1;
+        if(bgRoll < 0.05) { bgMode = 4; } // SECRET 5% (chaotic mode)
+        else if(bgRoll < 0.36) { bgMode = 1; } // Mode 1: original repel but dynamic
+        else if(bgRoll < 0.68) { bgMode = 2; } // Mode 2: orbiting galaxy
+        else { bgMode = 3; } // Mode 3: digital rain/wind
+
+        if(bgMode === 4) {
+          setTimeout(() => fireNotif("BRO YOU ROLLED THE 5% SECRET BACKGROUND GO BUY A LOTTERY TICKET"), 1500);
+        } else {
+            console.log(`Loaded background mode ${bgMode}`);
+        }
 
         window.addEventListener('mousemove', (e) => {
-          mouse.x = e.x;
-          mouse.y = e.y;
+          mouse.x = e.clientX;
+          mouse.y = e.clientY;
         });
-
         window.addEventListener('resize', () => {
           width = canvas.width = window.innerWidth;
           height = canvas.height = window.innerHeight;
@@ -483,49 +594,77 @@
             this.baseX = this.x;
             this.baseY = this.y;
             this.density = (Math.random() * 20) + 1;
+            this.angle = Math.random() * 360;
           }
           draw() {
-            ctx.fillStyle = 'rgba(187, 134, 252, 0.4)'; // that chill purple accent
+            if(bgMode === 4) {
+              // secret mode rapid color changes
+              ctx.fillStyle = `hsl(${Math.random()*360}, 80%, 60%)`;
+            } else {
+              ctx.fillStyle = 'rgba(187, 134, 252, 0.4)'; // chill purple accent
+            }
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
             ctx.closePath();
             ctx.fill();
           }
           update() {
-            // checking distance between particle and mouse
             let dx = mouse.x - this.x;
             let dy = mouse.y - this.y;
             let distance = Math.sqrt(dx * dx + dy * dy);
-            let forceDirectionX = dx / distance;
-            let forceDirectionY = dy / distance;
-            let maxDistance = mouse.radius;
-            let force = (maxDistance - distance) / maxDistance;
-            let directionX = forceDirectionX * force * this.density;
-            let directionY = forceDirectionY * force * this.density;
+            
+            // let base drift so it "moves more" organically instead of staying rigid
+            this.baseX += Math.sin(Date.now() * 0.0005 + this.density) * 0.3;
+            this.baseY += Math.cos(Date.now() * 0.0005 + this.density) * 0.3;
 
-            if (distance < mouse.radius) {
-              // repel particles away from mouse deadass
-              this.x -= directionX;
-              this.y -= directionY;
-            } else {
-              // slowly return back to base position
-              if (this.x !== this.baseX) {
-                let dx = this.x - this.baseX;
-                this.x -= dx / 20;
+            if (bgMode === 1) { // REPEL MODE (enhanced)
+              if (distance < mouse.radius) {
+                this.x -= (dx / distance) * (mouse.radius - distance) / mouse.radius * this.density;
+                this.y -= (dy / distance) * (mouse.radius - distance) / mouse.radius * this.density;
+              } else {
+                this.x -= (this.x - this.baseX) * 0.05;
+                this.y -= (this.y - this.baseY) * 0.05;
               }
-              if (this.y !== this.baseY) {
-                let dy = this.y - this.baseY;
-                this.y -= dy / 20;
+
+            } else if (bgMode === 2) { // ORBIT MODE
+              if (distance < 300) { // get pulled into orbit
+                this.angle += 0.02;
+                this.x += Math.cos(this.angle) * 2;
+                this.y += Math.sin(this.angle) * 2;
+                // slight pull towards mouse
+                this.x += (mouse.x - this.x) * 0.01;
+                this.y += (mouse.y - this.y) * 0.01;
+              } else {
+                this.x -= (this.x - this.baseX) * 0.02;
+                this.y -= (this.y - this.baseY) * 0.02;
               }
+
+            } else if (bgMode === 3) { // WIND/RAIN MODE
+              this.y += this.density * 0.2;
+              if (this.y > height + 10) { 
+                this.y = -10; 
+                this.x = Math.random() * width; 
+              }
+              // mouse blows them away
+              if (distance < mouse.radius) {
+                this.x -= (dx / distance) * 5;
+              }
+
+            } else if (bgMode === 4) { // SECRET CHAOS MODE
+               this.x += (Math.random() - 0.5) * 10;
+               this.y += (Math.random() - 0.5) * 10;
+               // wrap around edges
+               if(this.x < 0) this.x = width; if(this.x > width) this.x = 0;
+               if(this.y < 0) this.y = height; if(this.y > height) this.y = 0;
             }
+
             this.draw();
           }
         }
 
         function initParticles() {
           particles = [];
-          // creating enough particles so it looks cool but doesn't lag the shit out of the browser
-          for (let i = 0; i < 150; i++) {
+          for (let i = 0; i < (bgMode === 4 ? 250 : 150); i++) {
             particles.push(new Particle());
           }
         }
@@ -535,20 +674,22 @@
           for (let i = 0; i < particles.length; i++) {
             particles[i].update();
           }
-          connectParticles();
+          // connect nodes for extra hacker vibe unless its secret mode
+          if(bgMode !== 4) {
+            connectParticles();
+          }
           requestAnimationFrame(animate);
         }
 
-        // drawing lines between close particles for that hacker network look
         function connectParticles() {
-          let opacityValue = 1;
           for (let a = 0; a < particles.length; a++) {
             for (let b = a; b < particles.length; b++) {
-              let distance = ((particles[a].x - particles[b].x) * (particles[a].x - particles[b].x))
-                           + ((particles[a].y - particles[b].y) * (particles[a].y - particles[b].y));
+              let dx = particles[a].x - particles[b].x;
+              let dy = particles[a].y - particles[b].y;
+              let distance = (dx*dx) + (dy*dy);
               if (distance < (canvas.width/7) * (canvas.height/7)) {
-                opacityValue = 1 - (distance / 10000);
-                ctx.strokeStyle = 'rgba(187, 134, 252, ' + opacityValue + ')';
+                let opacity = 1 - (distance / 10000);
+                ctx.strokeStyle = 'rgba(187, 134, 252, ' + opacity + ')';
                 ctx.lineWidth = 1;
                 ctx.beginPath();
                 ctx.moveTo(particles[a].x, particles[a].y);
@@ -558,9 +699,150 @@
             }
           }
         }
-
         initParticles();
         animate();
+      }
+
+      // --- MINIGAME SYSTEM ---
+      const gCanvas = document.getElementById('game-canvas');
+      const gCtx = gCanvas.getContext('2d');
+      let gMouse = {x: 325, y: 175}; // relative to canvas
+      let score = 0;
+      let highScore = parseInt(getCookie('ephemeralGameHigh')) || 0;
+      document.getElementById('game-high').innerText = highScore;
+      
+      let gameLoopId;
+      let isPlaying = false;
+      let enemies = [];
+      let target = null;
+
+      // track mouse inside canvas
+      gCanvas.addEventListener('mousemove', (e) => {
+          const rect = gCanvas.getBoundingClientRect();
+          const scaleX = gCanvas.width / rect.width;
+          const scaleY = gCanvas.height / rect.height;
+          gMouse.x = (e.clientX - rect.left) * scaleX;
+          gMouse.y = (e.clientY - rect.top) * scaleY;
+      });
+
+      // clicking targets
+      gCanvas.addEventListener('click', () => {
+          if(!isPlaying || !target) return;
+          let dist = Math.hypot(gMouse.x - target.x, gMouse.y - target.y);
+          if(dist < target.r + 8) { // giving em a tiny bit of leeway
+              score++;
+              document.getElementById('game-score').innerText = score;
+              spawnTarget();
+              // make it harder as time goes on deadass
+              if(score % 2 === 0) spawnEnemy(); 
+          }
+      });
+
+      function spawnTarget() {
+          target = {
+              x: Math.random() * (gCanvas.width - 60) + 30,
+              y: Math.random() * (gCanvas.height - 60) + 30,
+              r: 16,
+              timeLeft: 100 // frames til explosion (approx 1.6 secs)
+          };
+      }
+
+      function spawnEnemy(x, y) {
+          enemies.push({
+              x: x || Math.random() * gCanvas.width,
+              y: y || Math.random() * gCanvas.height,
+              r: 5,
+              speed: 1.2 + (Math.random() * 1.5) // random speeds
+          });
+      }
+
+      function startGame() {
+          score = 0;
+          document.getElementById('game-score').innerText = score;
+          enemies = [];
+          for(let i=0; i<3; i++) spawnEnemy(); // spawn base enemies
+          spawnTarget();
+          isPlaying = true;
+          
+          if(gameLoopId) cancelAnimationFrame(gameLoopId);
+          gameLoop();
+      }
+
+      function endGame() {
+          isPlaying = false;
+          if(score > highScore) {
+              highScore = score;
+              setCookie('ephemeralGameHigh', highScore, 365);
+              document.getElementById('game-high').innerText = highScore;
+              fireNotif(`holy shit you beat your highscore! new best: ${highScore}`);
+          } else {
+              fireNotif(`ass game bro, you died with ${score} points.`);
+          }
+      }
+
+      function gameLoop() {
+          if(!isPlaying) return;
+          gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+
+          // handle target
+          if(target) {
+              target.timeLeft--;
+              if(target.timeLeft <= 0) {
+                  // bro missed it, it explodes into 3 more particles
+                  for(let i=0; i<3; i++) spawnEnemy(target.x, target.y);
+                  spawnTarget();
+                  fireNotif("bro missed the circle and it exploded lmaoo");
+              } else {
+                  // draw the target
+                  gCtx.fillStyle = '#0f0';
+                  gCtx.beginPath();
+                  gCtx.arc(target.x, target.y, target.r, 0, Math.PI*2);
+                  gCtx.fill();
+                  
+                  // draw the shrinking timer ring around it
+                  gCtx.strokeStyle = '#fff';
+                  gCtx.lineWidth = 2;
+                  gCtx.beginPath();
+                  gCtx.arc(target.x, target.y, target.r + 5, 0, Math.PI*2 * (target.timeLeft/100));
+                  gCtx.stroke();
+              }
+          }
+
+          // handle enemies
+          let dead = false;
+          gCtx.fillStyle = '#ff3b3b';
+          enemies.forEach(e => {
+              let dx = gMouse.x - e.x;
+              let dy = gMouse.y - e.y;
+              let dist = Math.hypot(dx, dy);
+              
+              if(dist > 0) {
+                  e.x += (dx/dist) * e.speed;
+                  e.y += (dy/dist) * e.speed;
+              }
+              
+              gCtx.beginPath();
+              gCtx.arc(e.x, e.y, e.r, 0, Math.PI*2);
+              gCtx.fill();
+
+              // player hitbox collision
+              if(dist < e.r + 4) {
+                  dead = true;
+              }
+          });
+
+          // draw player mouse pointer
+          gCtx.strokeStyle = '#bb86fc';
+          gCtx.lineWidth = 2;
+          gCtx.beginPath();
+          gCtx.arc(gMouse.x, gMouse.y, 4, 0, Math.PI*2);
+          gCtx.stroke();
+
+          if(dead) {
+              endGame();
+              return;
+          }
+          gameLoopId = requestAnimationFrame(gameLoop);
       }
     </script>
 </body></html>

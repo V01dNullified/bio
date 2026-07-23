@@ -280,7 +280,6 @@
         pointer-events: none; /* so it dont block clicks */
       }
 
-
       /* --- ANIMATION POOLS --- */
       /* 1. Tab Switching Anims */
       .tab-anim-1 { animation: fadeIn 0.4s ease-out; }
@@ -301,6 +300,38 @@
       .notif-close-1 { animation: fadeOut 0.3s ease-in forwards; }
       .notif-close-2 { animation: slideUp 0.4s ease-in forwards; }
       .notif-close-secret { animation: yeet 0.8s ease-in forwards; }
+
+      /* --- STATS CSS --- */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+      }
+      .stat-card {
+        background: rgba(24, 24, 24, 0.85);
+        border: 1px dashed #333;
+        padding: 15px;
+        text-align: center;
+        transition: all 0.2s ease;
+      }
+      .stat-card:hover {
+        border-color: #bb86fc;
+        background-color: rgba(187, 134, 252, 0.05);
+        transform: translateY(-2px);
+      }
+      .stat-title {
+        font-size: 12px;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .stat-value {
+        font-size: 24px;
+        color: #bb86fc;
+        font-weight: bold;
+        margin-top: 5px;
+      }
 
       /* KEYFRAMES */
       @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -338,6 +369,7 @@
       <button id="posts-btn" class="tab-btn" onclick="switchTab('posts-tab', this)">posts</button>
       <button id="notifs-btn" class="tab-btn" onclick="switchTab('notifs-tab', this)">notifs</button>
       <button class="tab-btn" onclick="switchTab('minigame-tab', this)">minigame</button>
+      <button class="tab-btn" onclick="switchTab('stats-tab', this)">stats</button>
     </div>
     
     <!-- BIO SECTION (original content) -->
@@ -416,8 +448,100 @@
       <canvas id="game-canvas" width="650" height="350"></canvas>
     </div>
 
+    <!-- STATS TAB -->
+    <div id="stats-tab" class="tab-content">
+      <p>tracking literally everything you do on here. dont worry ts stays in your cookies.</p>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-title">time on site</div>
+          <div class="stat-value" id="stat-time-site">0s</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">time per page</div>
+          <div class="stat-value" id="stat-time-pages" style="font-size: 14px;"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">avg game score</div>
+          <div class="stat-value" id="stat-avg-score">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">times died</div>
+          <div class="stat-value" id="stat-deaths">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">circle hit rate</div>
+          <div class="stat-value" id="stat-hit-rate">0%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">circles missed</div>
+          <div class="stat-value" id="stat-missed">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">secrets found</div>
+          <div class="stat-value" id="stat-secrets">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">unique secrets</div>
+          <div class="stat-value" id="stat-unique-secrets">0/5</div>
+        </div>
+      </div>
+    </div>
+
     <!-- the js that makes everything work -->
     <script>
+      // --- BUG FIX VARIABLES ---
+      let notifTimeout;
+      let closeTimeout; // deadass added this to stop the overlap glitch
+
+      // --- STATS ENGINE ---
+      let eStats = {
+        timeSite: 0, timeBio: 0, timePosts: 0, timeNotifs: 0, timeMinigame: 0, timeStats: 0,
+        gamesPlayed: 0, totalScore: 0, timesDied: 0, circlesHit: 0, circlesMissed: 0,
+        secretsFound: 0, uniqueSecrets: [] // tracks out of 5: tab, post, notif-pop, notif-close, bg
+      };
+
+      // format the time so it ain't just massive seconds
+      function formatTime(sec) {
+        let m = Math.floor(sec / 60);
+        let s = sec % 60;
+        return m > 0 ? `${m}m ${s}s` : `${s}s`;
+      }
+
+      // update the dom
+      function updateStatsUI() {
+        if (!document.getElementById('stats-tab')) return;
+
+        let totalCircles = eStats.circlesHit + eStats.circlesMissed;
+        let hitRate = totalCircles > 0 ? Math.round((eStats.circlesHit / totalCircles) * 100) : 0;
+        let avgScore = eStats.gamesPlayed > 0 ? (eStats.totalScore / eStats.gamesPlayed).toFixed(1) : 0;
+
+        document.getElementById('stat-time-site').innerText = formatTime(eStats.timeSite);
+        document.getElementById('stat-time-pages').innerHTML = `bio: ${formatTime(eStats.timeBio)}<br>posts: ${formatTime(eStats.timePosts)}<br>mini: ${formatTime(eStats.timeMinigame)}`;
+        document.getElementById('stat-avg-score').innerText = avgScore;
+        document.getElementById('stat-deaths').innerText = eStats.timesDied;
+        document.getElementById('stat-hit-rate').innerText = `${hitRate}%`;
+        document.getElementById('stat-missed').innerText = eStats.circlesMissed;
+        document.getElementById('stat-secrets').innerText = eStats.secretsFound;
+        document.getElementById('stat-unique-secrets').innerText = `${eStats.uniqueSecrets.length}/5`;
+      }
+
+      // timer that tracks every single second bro is on the page
+      setInterval(() => {
+        eStats.timeSite++;
+        let activeTab = document.querySelector('.tab-content.active');
+        if (activeTab) {
+          if (activeTab.id === 'bio-tab') eStats.timeBio++;
+          if (activeTab.id === 'posts-tab') eStats.timePosts++;
+          if (activeTab.id === 'notifs-tab') eStats.timeNotifs++;
+          if (activeTab.id === 'minigame-tab') eStats.timeMinigame++;
+          if (activeTab.id === 'stats-tab') eStats.timeStats++;
+        }
+        if (eStats.timeSite % 3 === 0) {
+          setCookie('ephemeralTotalStats', JSON.stringify(eStats), 365);
+          updateStatsUI();
+        }
+      }, 1000);
+
       // --- GLOBAL CLICK ANIMATION ---
       window.addEventListener('click', (e) => {
         // spawning a ripple where bro clicks
@@ -450,7 +574,6 @@
         return "";
       }
 
-      let notifTimeout;
       function fireNotif(msg) {
         document.getElementById('notif-msg').innerText = msg;
         const toast = document.getElementById('notif-toast');
@@ -470,7 +593,9 @@
           document.getElementById('notifs-btn').classList.add('has-new');
         }
 
+        // THE GLITCH FIX: killing BOTH the auto-fire and the auto-close from old calls
         clearTimeout(notifTimeout);
+        clearTimeout(closeTimeout);
         notifTimeout = setTimeout(closeNotif, 4000); // auto close ts
       }
 
@@ -484,7 +609,8 @@
       function closeNotif() {
         const toast = document.getElementById('notif-toast');
         playRandomAnim(toast, 'notif-close-1', 'notif-close-2', 'notif-close-secret', true);
-        setTimeout(() => { toast.classList.remove('show'); }, 800);
+        // assigned it to closeTimeout so it can be killed if spammed
+        closeTimeout = setTimeout(() => { toast.classList.remove('show'); }, 800);
       }
 
       // --- RNG ANIMATION FUNCTION ---
@@ -495,6 +621,13 @@
         let rng = Math.random();
         if (rng < 0.05) { // bumped to 5% to match bg secret chances
           el.classList.add(secretClass);
+          
+          // STAT TRACKER INJECTION
+          eStats.secretsFound++;
+          if(!eStats.uniqueSecrets.includes(secretClass)) eStats.uniqueSecrets.push(secretClass);
+          setCookie('ephemeralTotalStats', JSON.stringify(eStats), 365);
+          updateStatsUI();
+
           // if they find a secret anim, let em know (unless its the toast itself doing it, then infinite loop lol)
           if(!ignoreNotif) {
              setTimeout(() => fireNotif("yo you just found a secret 5% UI animation! lucky mf fr"), 100);
@@ -537,6 +670,14 @@
       window.onload = () => {
         let currentPosts = document.querySelectorAll('.post').length;
         let savedPosts = getCookie('ephemeralPostCount');
+        
+        // load that shit from cookies on start
+        let savedStats = getCookie('ephemeralTotalStats');
+        if (savedStats) {
+          eStats = Object.assign(eStats, JSON.parse(savedStats));
+          updateStatsUI();
+        }
+
         renderNotifTab();
 
         if (savedPosts !== "") {
@@ -572,6 +713,12 @@
         else { bgMode = 3; } // Mode 3: digital rain/wind
 
         if(bgMode === 4) {
+          // STAT TRACKER INJECTION
+          eStats.secretsFound++;
+          if(!eStats.uniqueSecrets.includes('bg-secret')) eStats.uniqueSecrets.push('bg-secret');
+          setCookie('ephemeralTotalStats', JSON.stringify(eStats), 365);
+          updateStatsUI();
+          
           setTimeout(() => fireNotif("BRO YOU ROLLED THE 5% SECRET BACKGROUND GO BUY A LOTTERY TICKET"), 1500);
         } else {
             console.log(`Loaded background mode ${bgMode}`);
@@ -731,7 +878,10 @@
           let dist = Math.hypot(gMouse.x - target.x, gMouse.y - target.y);
           if(dist < target.r + 8) { // giving em a tiny bit of leeway
               score++;
+              
+              eStats.circlesHit++; // STAT TRACKER
               document.getElementById('game-score').innerText = score;
+              
               spawnTarget();
               // make it harder as time goes on deadass
               if(score % 2 === 0) spawnEnemy(); 
@@ -770,6 +920,14 @@
 
       function endGame() {
           isPlaying = false;
+          
+          // STAT TRACKER INJECTION
+          eStats.timesDied++;
+          eStats.gamesPlayed++;
+          eStats.totalScore += score;
+          setCookie('ephemeralTotalStats', JSON.stringify(eStats), 365);
+          updateStatsUI();
+
           if(score > highScore) {
               highScore = score;
               setCookie('ephemeralGameHigh', highScore, 365);
@@ -789,6 +947,8 @@
               target.timeLeft--;
               if(target.timeLeft <= 0) {
                   // bro missed it, it explodes into 3 more particles
+                  eStats.circlesMissed++; // STAT TRACKER
+                  
                   for(let i=0; i<3; i++) spawnEnemy(target.x, target.y);
                   spawnTarget();
                   fireNotif("bro missed the circle and it exploded lmaoo");

@@ -1,76 +1,238 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<!-- saved from url=(0047)https://v01dnullified.github.io/bio/styled.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>ephemeral :o</title>
     <style>
-      /* deadass making ts dark mode so light mode dont blind you at midnight */
+      /* deadass making ts dark mode so light mode dont blind you at midnight[cite: 1] */
       body {
         background-color: #121212;
         color: #e0e0e0;
-        font-family: 'Courier New', Courier, monospace; /* hacker/ephemeral vibes ong */
+        font-family: 'Courier New', Courier, monospace; /* hacker/ephemeral vibes ong[cite: 1] */
         max-width: 750px;
         margin: 0 auto;
         padding: 40px 20px;
         line-height: 1.6;
       }
 
-      /* making the header pop just enough without trying too hard */
+      /* making the header pop just enough without trying too hard[cite: 1] */
       h1 {
         color: #ffffff;
         border-bottom: 1px solid #333;
         padding-bottom: 10px;
-        text-transform: lowercase; /* keeping it casual asf */
+        text-transform: lowercase; /* keeping it casual asf[cite: 1] */
       }
 
-      /* spacing out the paragraphs so ts aint a giant wall of text */
+      /* spacing out the paragraphs so ts aint a giant wall of text[cite: 1] */
       p {
         margin-bottom: 24px;
         font-size: 16px;
       }
 
-      /* styling the links so they don't look ass */
+      /* styling the links so they don't look ass[cite: 1] */
       a {
-        color: #bb86fc; /* chill purple accent */
+        color: #bb86fc; /* chill purple accent[cite: 1] */
         text-decoration: none;
         border-bottom: 1px dashed #bb86fc;
         transition: all 0.2s ease-in-out;
       }
 
-      /* making it glow slightly when you hover over that shit */
+      /* making it glow slightly when you hover over that shit[cite: 1] */
       a:hover {
         color: #ffffff;
         border-bottom: 1px solid #ffffff;
         background-color: rgba(187, 134, 252, 0.1);
       }
+
+      /* --- NEW CSS FOR THE BLOG SHIT --- */
+
+      /* styling the tabs so you can switch between bio and posts */
+      .tabs {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 30px;
+        border-bottom: 1px solid #333;
+        padding-bottom: 10px;
+      }
+
+      /* making the buttons look clean and fit the vibe */
+      .tab-btn {
+        background: none;
+        color: #e0e0e0;
+        border: 1px dashed #333;
+        padding: 8px 16px;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 16px;
+        transition: all 0.2s ease-in-out;
+      }
+
+      /* glow up when active or hovered */
+      .tab-btn:hover, .tab-btn.active {
+        color: #ffffff;
+        border-color: #bb86fc;
+        background-color: rgba(187, 134, 252, 0.1);
+      }
+
+      /* hiding the content unless its the active tab */
+      .tab-content {
+        display: none;
+      }
+      .tab-content.active {
+        display: block;
+      }
+
+      /* the box for each individual post */
+      .post {
+        border: 1px solid #333;
+        padding: 20px;
+        margin-bottom: 25px;
+        background-color: #181818;
+      }
+
+      /* styling the date so it pops */
+      .post-date {
+        color: #bb86fc;
+        font-size: 14px;
+        display: block;
+        margin-bottom: 15px;
+        border-bottom: 1px dashed #333;
+        padding-bottom: 5px;
+      }
+
+      /* clamping the height so ts doesnt take up the whole screen */
+      .post-content {
+        max-height: 150px; /* change this if you want taller boxes */
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+
+      /* expanding it to be massive when button is clicked */
+      .post.expanded .post-content {
+        max-height: 5000px;
+      }
+
+      /* making sure images fit nicely inside the post box */
+      .post img {
+        max-width: 100%;
+        height: auto;
+        border: 1px solid #333;
+        margin-top: 10px;
+      }
+
+      /* the dropdown arrow button */
+      .expand-btn {
+        background: none;
+        border: none;
+        color: #bb86fc;
+        font-size: 20px;
+        cursor: pointer;
+        width: 100%;
+        text-align: center;
+        margin-top: 15px;
+        padding: 5px;
+        transition: all 0.2s ease;
+      }
+
+      .expand-btn:hover {
+        color: #ffffff;
+        background-color: rgba(187, 134, 252, 0.1);
+      }
+
+      /* flipping the arrow upside down when expanded */
+      .post.expanded .expand-btn {
+        transform: rotate(180deg);
+      }
     </style>
   </head>
   <body>
     <h1>wsp son</h1>
+
+    <!-- TABS MENU -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('bio-tab', this)">bio</button>
+      <button class="tab-btn" onclick="switchTab('posts-tab', this)">posts</button>
+    </div>
     
-    <p>made this at 2:22pm, so im not tryna make it polished deadass.</p>
-    
-    <p>im ben, i make projects spontaniously and fleetingly. expect the periods of me actually being productive in a specific niche to be a literal reflection of what i go be online, ephemeral asf.</p>
-    
-    <p>my hobbies include soccer, gym, art, programming (usually macros and frontend web development and python and shit), and anime.</p>
-    
-    <p>curious about my anime preferences? visit my anilist account which i regularly update on the daily: <a href="https://anilist.co/user/ephemerality/" target="_blank">here</a></p>
-    
-    <p>philosophy: im a nihilistic epicureanist. being honest, i deadass made that shit up myself. but it means i think the universe hasnt a meaning and so you should make your own purpose and grand goal to it, in my case it was epicureanism. epicureanism values longterm happiness, pleasure, satisfaction, and peace of mind. like hedonism but long term instead of taking the first thing you see that makes you happy.</p>
-    
-    <p>political stance: i am heavily in favor of the nordic system. im antizionist and think corruption is rampant in both the usa and brazil (im brazilian).</p>
-    
-    <p>prolly good to note that i live in the usa. i speak spanish portuguese and english fluently. i plan on being an offshore rig sparky and retiring when im 38. ik pretty optimistic to assume i wont get eradicated from ww3 by then lmao.</p>
-    
-    <p>as its probably obvious by now, im obssessed with 4 things: creative work, joyousness, anime, and time. time is a very valuable thing to me, because its really the driving force behind my motivations. i live on the assumption that procrastination on a goal is gambling it on the assumption ill be alive tommorow. does that sound grim? youre trapped by time and youll live once. life is inherently meaningless by default. i gave myself the goal to be as happy as possible for as long as possible. and death is inescapable, so whats the point of worrying bout that shit? let it be and focus on what you can change deadass.</p>
-    
-    <p>kanye and MF DOOM (all caps) are my favorite music artists. romcoms are my favorite genre of anime. JJBA is my favorite shounen/seinen anime/manga, 100gfwrrrrrly is my favorite anime in general (followed by dangers in my heart).</p>
-    
-    <p>im 6' or so, really skinny at 145lbs though. have been bulkin for 7 months, gained a ton of muscle (compared to before) and lost fat at the same time, so now i got hella abs too.</p>
-    
-    <p>im exceptionally confident in myself. im not arrogant, just selfishly selfless while being hella confident. im based and opinionated, i will shit on hyped things if theyre ass. i dont fw bandwagon shit.</p>
-    
-    <p>kinda broke (hmo $devdivinity). i support barcalona and internacional sc (series A in brazil (barely, fuckin scaring me these days)).</p>
-    
-    <p>thats all i can think of. "my 15 seconds up but i got more to say / thats enough, mr. ephemeral, please, no more today" headass</p>
-  </body>
-</html>
+    <!-- BIO SECTION (original content) -->
+    <div id="bio-tab" class="tab-content active">
+        <p>made this at 2:22pm, so im not tryna make it polished deadass.[cite: 1]</p>
+        
+        <p>im ben, i make projects spontaniously and fleetingly. expect the periods of me actually being productive in a specific niche to be a literal reflection of what i go be online, ephemeral asf.[cite: 1]</p>
+        
+        <p>my hobbies include soccer, gym, art, programming (usually macros and frontend web development and python and shit), and anime.[cite: 1]</p>
+        
+        <p>curious about my anime preferences? visit my anilist account which i regularly update on the daily: <a href="https://anilist.com/users/ephemerality" target="_blank">here</a>[cite: 1]</p>
+        
+        <p>philosophy: im a nihilistic epicureanist. being honest, i deadass made that shit up myself. but it means i think the universe hasnt a meaning and so you should make your own purpose and grand goal to it, in my case it was epicureanism. epicureanism values longterm happiness, pleasure, satisfaction, and peace of mind. like hedonism but long term instead of taking the first thing you see that makes you happy.[cite: 1]</p>
+        
+        <p>political stance: i am heavily in favor of the nordic system. im antizionist and think corruption is rampant in both the usa and brazil (im brazilian).[cite: 1]</p>
+        
+        <p>prolly good to note that i live in the usa. i speak spanish portuguese and english fluently. i plan on being an offshore rig sparky and retiring when im 38. ik pretty optimistic to assume i wont get eradicated from ww3 by then lmao.[cite: 1]</p>
+        
+        <p>as its probably obvious by now, im obssessed with 4 things: creative work, joyousness, anime, and time. time is a very valuable thing to me, because its really the driving force behind my motivations. i live on the assumption that procrastination on a goal is gambling it on the assumption ill be alive tommorow. does that sound grim? youre trapped by time and youll live once. life is inherently meaningless by default. i gave myself the goal to be as happy as possible for as long as possible. and death is inescapable, so whats the point of worrying bout that shit? let it be and focus on what you can change deadass.[cite: 1]</p>
+        
+        <p>kanye and MF DOOM (all caps) are my favorite music artists. romcoms are my favorite genre of anime. JJBA is my favorite shounen/seinen anime/manga, 100gfwrrrrrly is my favorite anime in general (followed by dangers in my heart).[cite: 1]</p>
+        
+        <p>im 6' or so, really skinny at 145lbs though. have been bulkin for 7 months, gained a ton of muscle (compared to before) and lost fat at the same time, so now i got hella abs too.[cite: 1]</p>
+        
+        <p>im exceptionally confident in myself. im not arrogant, just selfishly selfless while being hella confident. im based and opinionated, i will shit on hyped things if theyre ass. i dont fw bandwagon shit.[cite: 1]</p>
+        
+        <p>kinda broke (hmo $devdivinity). i support barcalona and internacional sc (series A in brazil (barely, fuckin scaring me these days)).[cite: 1]</p>
+        
+        <p>thats all i can think of. "my 15 seconds up but i got more to say / thats enough, mr. ephemeral, please, no more today" headass[cite: 1]</p>
+    </div>
+
+    <!-- POSTS SECTION (new blog feature) -->
+    <div id="posts-tab" class="tab-content">
+      
+      <!-- POST 1 -->
+      <div class="post">
+        <span class="post-date">july 23, 2026</span>
+        <div class="post-content">
+          <p>deadass just testing this blog out. ts has a max vertical limit so if i keep typing a bunch of random filler shit, it's gonna get cut off and you'll have to press the arrow to read the rest.</p>
+          <p>adding some extra text here to trigger the overflow.</p>
+          <p>yep, still yapping. testing out images too.</p>
+          <!-- image example, just replace the src with your own link or local file -->
+          <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExemE1aHYzd2NncHEwdWZ0aXYyNGZ3YnNleTEyamN1cnI4aGZ2N3RkcCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/TAfv4qEQW4HhVIMnqc/giphy.gif" alt="gif">
+        </div>
+        <!-- the arrow to expand the post -->
+        <button class="expand-btn" onclick="togglePost(this)">&#x25BC;</button>
+      </div>
+
+      <!-- POST 2 (note to self incase im an idiot, copy this whole block to make a new post) -->
+      <div class="post">
+        <span class="post-date">july 22, 2026</span>
+        <div class="post-content">
+          <p>first actual post. short and ephemeral.</p>
+        </div>
+        <!-- you still keep the button just in case, or you can delete it for short posts -->
+        <button class="expand-btn" onclick="togglePost(this)">&#x25BC;</button>
+      </div>
+
+    </div>
+
+    <!-- the js that makes everything work -->
+    <script>
+      // swapping between bio and posts seamlessly
+      function switchTab(tabId, clickedBtn) {
+        // hide all content
+        document.querySelectorAll('.tab-content').forEach(tab => {
+          tab.classList.remove('active');
+        });
+        // reset all buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        
+        // show the one you clicked
+        document.getElementById(tabId).classList.add('active');
+        clickedBtn.classList.add('active');
+      }
+
+      // expanding the post box when you hit the arrow
+      function togglePost(btn) {
+        const post = btn.closest('.post');
+        post.classList.toggle('expanded');
+      }
+    </script>
+</body></html>
